@@ -1,8 +1,6 @@
 <div id="top"></div>
 
 
-[![Contributors][contributors-shield]][contributors-url]
-[![Contributors][contributors-shield2]][contributors-url2]
 
 
 <!-- PROJECT LOGO -->
@@ -40,7 +38,14 @@
   </ol>
 </details>
 
+## Team Members(sorted by name)
 
+<table>
+  <tr>
+    <td align="center"><a href="https://github.com/hasanaliozkan-dev"><img src="https://avatars.githubusercontent.com/u/63359311?v=4" width="100px;" alt=""/><br /><sub><b>Hasan Ali ÖZKAN</b></sub></a><br /><br /><sub><b>Smart Contract Developer</b></sub></a><br /></a></td>
+    <td align="center"><a href="https://github.com/mehmetkadri"><img src="https://avatars.githubusercontent.com/u/58008233?s=400&v=4" width="100px;" alt=""/><br /><sub><b>Mehmet Kadri GOFRALILAR</b></sub></a><br /><br /><sub><b>Mobile Application Developer</b></sub></a><br /></a></td>
+  </tr>
+</table>
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
@@ -154,14 +159,3 @@ in one piece and if not, find the guilty party faster and clearer.
 * []()
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/badge/Contributor-Mehmet%20Kadri%20GOFRALILAR-yellow
-[contributors-url]: https://github.com/mehmetkadri
-[contributors-shield2]: https://img.shields.io/badge/Contributor-Hasan%20Ali%20ÖZKAN-yellow
-[contributors-url2]: https://github.com/hasanaliozkan-dev
-
-[product-screenshot]: images/screenshot.png
