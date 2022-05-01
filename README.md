@@ -1,3 +1,6 @@
+<img src="Project Proposal Presentation/decentralized shipment.png" alt="Logo" width="300" height="200">
+
+
 # Decentralized Shipment
 
 This project is based on handling common shipment problems that we all probably have experienced before by using a decentralized solution. 
