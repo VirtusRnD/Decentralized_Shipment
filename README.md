@@ -1,44 +1,38 @@
-<div id="top"></div>
+# Decentralized Shipment
 
-
-
-
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
-  <a href="https://github.com/github_username/repo_name">
-    <img src="Project Proposal Presentation/decentralized shipment.png" alt="Logo" width="300" height="200">
-  </a>
-
-<h2 align="center">Decentralized Shipment</h2>
-
-  <p align="center">
-    This project is based on solving common shipment problems that we all probably have experienced before.
-  </p>
-  
-</div>
-
-
+This project is based on handling common shipment problems that we all probably have experienced before by using a decentralized solution. 
 
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
   <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#technologies-used">Technologies Used</a></li>
-      </ul>
-    </li>
-    <li><a href="#getting-started">Getting Started</a></li>
-    <li><a href="#project-model">Project Model</a></li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
+    <li><a href="#decentralized-shipment">Decentralized Shipment</a></li>
+    <li><a href="#project-description">Project Description</a></li>
+    <li><a href="#team-members">Team Members</a></li>
+    <li><a href="#system-design">System Design</a></li>
+    <li><a href="#system-usage">System Usage</a></li>
+    <li><a href="#mobile-application-ui">Mobile Application UI</a></li>
+    <li><a href="#requirements">Requirements</a></li>
   </ol>
 </details>
 
-## Team Members(sorted by name)
+
+## Project Description
+
+<p>
+    Even in today's world, unfortunately most of us have experienced shipment problems too many times and we probably will be experiencing these problems even more. For example:
+</p>
+<p>
+    After we order a product, we usually suffer from receiving our order damaged or incomplete. Sometimes we do not even receive our order at all. But we are still treated as if we have received our order perfectly.
+</p>
+<p>
+    Also in case of order cancel, everyone in the system (seller, shipping company employees, customer) wait for the cancelling process to be confirmed, which takes too much time. This waiting process means wasting time and not being able to use the cost of order for a few days (which might be critical).
+</p>
+<p>
+    We want to eliminate these kind of problems by using blockchain technology.
+</p>
+
+## Team Members
 
 <table>
   <tr>
@@ -47,52 +41,18 @@
   </tr>
 </table>
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
 
+## System Design
 
-  <p>
-    After we order a product, we usually suffer from receiving our order damaged or incomplete. Sometimes we do not even receive our order at all. But we are still treated as if we have received our order perfectly.
-  </p>
-  <p>
-    Also in case of order cancel, everyone in the system (seller, shipping company employees, customer) wait for the cancelling process to be confirmed, which takes too much time. This waiting process means wasting time and not being able to use the cost of order for a few days (which might be critical).
-  </p>
+As seen in below figure, 
+<!--Will be added later-->
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-### Technologies Used
-
-* [linkedin](https://linkedin.com/)
-* [youtube](https://youtube.com/)
-* [google](https://google.com/)
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- GETTING STARTED -->
-## Getting Started
-
-This is what we will be doing. These will be the steps. We first will do this, and then we will do that.
-
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-<!-- MODEL -->
-## Project Model
 <div align="center">
   <img src="Project Proposal Presentation/1.blockchain_schema_final.png" alt="Model" width="700">
 </div>
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
-
-<!-- USAGE EXAMPLES -->
-## Usage
+## System Usage
 
 <pre>
   After you order a product from online websites, there are four possible problems that you might suffer from during the shipment 
@@ -134,28 +94,14 @@ in one piece and if not, find the guilty party faster and clearer.
 
 </pre>
 
-<p align="right">(<a href="#top">back to top</a>)</p>
 
 
+## Mobile Application UI
 
-<!-- ROADMAP -->
-## Roadmap
+<!--Will be added later-->
 
-- [ ] Step 1: 
-- [ ] Step 2: 
-- [ ] Step 3: 
-    - [ ] Part 1: 
-    - [ ] Part 2:
+# Requirements
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
-
-<p align="right">(<a href="#top">back to top</a>)</p>
+*
+*
+<!--Will be added later-->
