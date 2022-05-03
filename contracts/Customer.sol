@@ -17,7 +17,7 @@ contract Customer{
         return Order(orderId, "order1", _product, OrderStatus.PREPARING, false);
     }
 
-    function checkOrderStatus(uint _orderId) public view returns (OrderStatus){
+    function checkOrderStatus(uint _orderId) public view returns (OrderStatus memory){
         return Order(_orderId).productStatus;
     }
     function cancelTheOrder(uint _orderId) public {
