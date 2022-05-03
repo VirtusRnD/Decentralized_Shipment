@@ -2,10 +2,14 @@ pragma solidity ^0.5.0;
 
 contract ShipmentDapp {
 
+    uint productId = 0;
+    uint orderId  = 0;
+    
     enum OrderStatus {
         PREPARING,
         ONTHEWAY,
-        RECEIVED
+        RECEIVED,
+        CANCELLED
     }
     struct Product{
         uint id;
@@ -17,11 +21,10 @@ contract ShipmentDapp {
     struct Order{
         uint OrderId;
         string orderName;
-        Product[] product;
-        OrderStatus prductStatus;
+        Product product;
+        OrderStatus orderStatus;
         bool isDamaged;
     }
-    
 
 
 }
