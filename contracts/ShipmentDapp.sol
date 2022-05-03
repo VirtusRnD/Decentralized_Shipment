@@ -2,7 +2,6 @@ pragma solidity ^0.5.0;
 
 contract ShipmentDapp {
 
-    uint productId = 0;
     uint orderId  = 0;
     
     enum OrderStatus {

@@ -1,6 +1,5 @@
 pragma solidity ^0.5.0;
 import 'contracts/ShipmentDapp.sol';
-import 'contracts/ShipmentDapp.sol';
 
 
 contract Customer{
