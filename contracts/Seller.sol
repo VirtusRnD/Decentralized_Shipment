@@ -1,20 +1,14 @@
 pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
-import 'contracts/ShipmentDapp.sol';
+import './Base.sol';
 
-contract Seller {
+contract Seller is Base {
 
     //This is the ID of the product and it's unique.
     //It is incremented every time a new product is added.
     uint productId = 0;
     uint orderId  = 0;
     
-    enum OrderStatus {
-        PREPARING,
-        ONTHEWAY,
-        RECEIVED,
-        CANCELLED
-    }
     //Product is a struct which contains the product details.
     struct Product{
         uint id;
