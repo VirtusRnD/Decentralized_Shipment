@@ -2,7 +2,7 @@ pragma solidity ^0.5.0;
 pragma experimental ABIEncoderV2;
 import 'contracts/ShipmentDapp.sol';
 
-contract Seller  {
+contract Seller {
 
     //This is the ID of the product and it's unique.
     //It is incremented every time a new product is added.
@@ -55,12 +55,13 @@ contract Seller  {
         return Order(1, "order1", _product, OrderStatus.PREPARING, false);
 
     }
+    
     function transferOrder2Shipment(Order memory _order) public {
             _order.orderStatus = OrderStatus.ONTHEWAY;
     }
 
+    
 
     
 }
-
 

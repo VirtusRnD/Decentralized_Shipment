@@ -1,8 +1,8 @@
 pragma solidity ^0.5.0;
-import 'contracts/ShipmentDapp.sol';
+import './ShipmentDapp.sol';
 
 
-contract Customer{
+contract Customer {
 
     string shipmentAddressOfCustomer;
     string name;
@@ -18,11 +18,11 @@ contract Customer{
     }
 
     function checkOrderStatus(uint _orderId) public view returns (OrderStatus memory){
-        return Order(_orderId).productStatus;
+        return Order(_orderId).orderStatus;
     }
     function cancelTheOrder(uint _orderId) public {
-        Order(_orderId).productStatus = OrderStatus.CANCELLED;
+        Order(_orderId).orderStatus = OrderStatus.CANCELLED;
     }
-
+    
 
 }

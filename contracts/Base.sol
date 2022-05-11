@@ -1,11 +1,7 @@
 pragma solidity ^0.5.0;
-import './Customer.sol';
-import './Seller.sol';
-import './ShipmentComp.sol';
 
-contract ShipmentDapp is Customer, Seller, ShipmentComp {
 
-    uint orderId  = 0;
+contract Base {
 
     enum OrderStatus {
         PREPARING,
@@ -13,6 +9,7 @@ contract ShipmentDapp is Customer, Seller, ShipmentComp {
         RECEIVED,
         CANCELLED
     }
+
     struct Product{
         uint id;
         string name;
@@ -21,12 +18,11 @@ contract ShipmentDapp is Customer, Seller, ShipmentComp {
     }
 
     struct Order{
+        uint orderId;
         string orderName;
         Product product;
         OrderStatus orderStatus;
         bool isDamaged;
-    }
+    } 
     
-
-
 }
