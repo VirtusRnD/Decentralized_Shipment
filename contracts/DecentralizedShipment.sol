@@ -18,6 +18,10 @@ contract DecentralizedShipment {
         received,   //  Order is received.
         cancelled   //  Order is cancelled by user.
     }
+    enum ProductStatus{
+        damaged,
+        not_damaged
+    }
     
     // Order struct which contains order details that will be used in our system in order to create order.
     struct Order{
@@ -28,7 +32,7 @@ contract DecentralizedShipment {
         uint shipment;              // This is the shipment of the order.    
         uint customer;              //This is the customer of the order.
         OrderStatus status;     //This is the status of the order.
-        bool is_damaged;             //This represents the order being damaged or not.
+        ProductStatus pStatus;           //This represents the order being damaged or not.
     }
  
 
@@ -64,7 +68,7 @@ contract DecentralizedShipment {
     /* ---------------EVENTS----------------- */
     
     event order_status_update(uint order_id, OrderStatus status);
-    event order_damaged_update(uint order_id, bool is_damaged);
+    event order_damaged_update(uint order_id, ProductStatus pStatus);
     
     /* ---------------MODIFIERS-------------- */
     
@@ -74,12 +78,12 @@ contract DecentralizedShipment {
     }
     
     modifier is_shipment() {
-        require(get_shipment_id[msg.sender] > 0, "You aren't registered as a courier");
+        require(get_shipment_id[msg.sender] > 0, "You aren't registered as a shipment");
         _;
     }
     
     modifier is_seller() {
-        require(get_seller_id[msg.sender] > 0, "You aren't registered as a restaurant");
+        require(get_seller_id[msg.sender] > 0, "You aren't registered as a seller");
         _;
     }
     
@@ -152,7 +156,7 @@ contract DecentralizedShipment {
         o.status = OrderStatus.preparing;
         o.seller = seller_id;
         o.customer = get_customer_id[msg.sender];
-        o.is_damaged = false;
+        o.pStatus = ProductStatus.not_damaged;
         
         customer_details[get_customer_id[msg.sender]].cur_order = o.id;
         emit order_status_update(o.id, o.status);
@@ -162,23 +166,23 @@ contract DecentralizedShipment {
         require(seller_id <= seller_count, "Seller doesn't exist");
         require(order_id <= order_count, "Order doesn't exist");
     
-        if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].is_damaged == true) {
+        if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.damaged) {
             return (0,1);
-        }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (0,0);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.damaged) {
             return (1,1);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (1,0);
-        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (2,1);
-        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (2,0);
-        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (3,1);
-        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (3,0);
-        }else if(order_details[order_id].status == OrderStatus.cancelled && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.cancelled && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (4,1);
         }else {
             return (4,0);
@@ -232,23 +236,26 @@ contract DecentralizedShipment {
     function check_order_status_seller(uint order_id, uint seller_id) is_seller() has_ordered() public view returns(uint, uint) {
         require(seller_id <= seller_count, "Seller doesn't exist");
         require(order_id <= order_count, "Order doesn't exist");
-         if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].is_damaged == true) {
+         require(seller_id <= seller_count, "Seller doesn't exist");
+        require(order_id <= order_count, "Order doesn't exist");
+    
+        if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.damaged) {
             return (0,1);
-        }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (0,0);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.damaged) {
             return (1,1);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (1,0);
-        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (2,1);
-        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (2,0);
-        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (3,1);
-        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (3,0);
-        }else if(order_details[order_id].status == OrderStatus.cancelled && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.cancelled && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (4,1);
         }else {
             return (4,0);
@@ -266,56 +273,92 @@ contract DecentralizedShipment {
         get_shipment_id[msg.sender] = shipment.id;
         return true;
     }
-    function update_status_to_ofd(uint order_id, bool is_damaged ) is_shipment() public returns(bool) {
+    function update_status_to_ofd_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
         order_details[order_id].status = OrderStatus.outfordelivery;
-        order_details[order_id].is_damaged = is_damaged;
+        order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
-        emit order_damaged_update(order_id, order_details[order_id].is_damaged);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
         return true;
     }
-    function update_status_to_received(uint order_id,  bool is_damaged ) is_shipment() public returns(bool) {
+    function update_status_to_ofd_and_not_damaged(uint order_id) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.outfordelivery;
+        order_details[order_id].pStatus = ProductStatus.not_damaged;
+        order_details[order_id] = order_details[order_count];
+        emit order_status_update(order_id, order_details[order_id].status);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
+        return true;
+    }
+    function update_status_to_received_and_damaged(uint order_id ) is_shipment() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
         order_details[order_id].status = OrderStatus.received;
-        order_details[order_id].is_damaged = is_damaged;
+        order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
-        emit order_damaged_update(order_id, order_details[order_id].is_damaged);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
         return true;
     }
-     function update_status_to_cancelled(uint order_id,  bool is_damaged ) is_shipment() public returns(bool) {
+    function update_status_to_received_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way");
-        order_details[order_id].status = OrderStatus.cancelled;
-        order_details[order_id].is_damaged = is_damaged;
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.received;
+        order_details[order_id].pStatus = ProductStatus.not_damaged;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
-        emit order_damaged_update(order_id, order_details[order_id].is_damaged);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
+        return true;
+    }
+     function update_status_to_cancelled_and_damaged(uint order_id ) is_shipment() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.cancelled;
+        order_details[order_id].pStatus = ProductStatus.damaged;
+        order_details[order_id] = order_details[order_count];
+        emit order_status_update(order_id, order_details[order_id].status);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
+        return true;
+    }
+     function update_status_to_cancelled_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.cancelled;
+        order_details[order_id].pStatus = ProductStatus.not_damaged;
+        order_details[order_id] = order_details[order_count];
+        emit order_status_update(order_id, order_details[order_id].status);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
         return true;
     }
     function check_order_status_shipment(uint order_id, uint seller_id) is_shipment() has_ordered() public view returns(uint,uint) {
         require(seller_id <= seller_count, "Seller doesn't exist");
         require(order_id <= order_count, "Order doesn't exist");
-         if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].is_damaged == true) {
+         require(seller_id <= seller_count, "Seller doesn't exist");
+        require(order_id <= order_count, "Order doesn't exist");
+    
+        if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.damaged) {
             return (0,1);
-        }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (0,0);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.damaged) {
             return (1,1);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (1,0);
-        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (2,1);
-        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (2,0);
-        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (3,1);
-        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].is_damaged == false) {
+        }else if(order_details[order_id].status == OrderStatus.received && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (3,0);
-        }else if(order_details[order_id].status == OrderStatus.cancelled && order_details[order_id].is_damaged == true) {
+        }else if(order_details[order_id].status == OrderStatus.cancelled && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (4,1);
         }else {
             return (4,0);

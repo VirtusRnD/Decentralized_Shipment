@@ -114,9 +114,10 @@ App = {
       return  instance.check_order_status_customer(1,1);
     }).then(
       function(result){
-        if(result[0].c[0] ==0 && result[1].c[0] ==0){
+        console.log(result);
+        if(result[0].c[0] ==0 && result[1].c[0] == 0){
           console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
-        }else if(result[0].c[0] ==0 && result[1].c[0] ==1){
+        }else if(result[0].c[0] ==0 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is preparing and is damaged");
         }
         else if(result[0].c[0] ==1 && result[1].c[0] ==0){
@@ -248,17 +249,62 @@ App = {
   /**Shipment Functions */
   get_status: function(){
     var programList = document.getElementById("status");
-    status = programList.options[programList.selectedIndex].value;
-    console.log(productName);
+    orderStatus = programList.options[programList.selectedIndex].value;
+    console.log(orderStatus);
   },
 
   update_status : function(){
+    var flag = 0;
+    if (document.getElementById('damaged').checked) {
+      flag =1;
+      console.log("damaged");
+    }
+    if (document.getElementById('notDamaged').checked) {
+      flag =2;
+      console.log("notDamaged");
+    }
+
     console.log("Order Status Updated");
-    App.contracts.DecentralizedShipment.deployed().then(function(instance){
-      return instance.update_status(1);
-    })
-
-
+    if(orderStatus == 1 && flag === 2){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+            instance.update_status_to_ofd_and_not_damaged(1);
+      }).catch(function(err){
+        console.log(err);
+      });
+    }
+    if(orderStatus == 1 && flag === 1){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+        instance.update_status_to_ofd_and_damaged(1);
+      }).catch(function(err){
+      console.log(err);
+      });
+    }if(orderStatus == 2 && flag == 2){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+            instance.update_status_to_received_and_not_damaged(1);
+      }).catch(function(err){
+        console.log(err);
+      });
+    }
+    if(orderStatus == 2 && flag ==1){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+        instance.update_status_to_received_and_damaged(1);
+      }).catch(function(err){
+      console.log(err);
+      });
+    }if(orderStatus == 3 && flag == 2){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+            instance.update_status_to_cancelled_and_not_damaged(1);
+      }).catch(function(err){
+        console.log(err);
+      });
+    }
+    if(orderStatus == 3 && flag ==1){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+        instance.update_status_to_cancelled_and_damaged(1);
+      }).catch(function(err){
+      console.log(err);
+      });
+    }
   },
 
   
@@ -300,8 +346,7 @@ App = {
           console.log(sessionStorage.getItem("productName") + " order cancelled and is not damaged");
         }
           
-      }
-    ).catch(function(err){
+      }).catch(function(err){
       console.log(err);
     });
   },
