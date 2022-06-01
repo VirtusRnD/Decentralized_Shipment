@@ -225,6 +225,14 @@ contract DecentralizedShipment {
         get_seller_id[msg.sender] = seller.id;
         return true;
     }
+    function receive_and_prepare_the_order(uint order_id) is_seller() public returns(bool) {
+        uint seller_id = get_seller_id[msg.sender];
+        require(order_details[order_id].seller == seller_id, "Not your order");
+        require(order_details[order_id].status == OrderStatus.preparing, "Already accepted this order");
+        order_details[order_id].status = OrderStatus.preparing;
+        emit order_status_update(order_id, order_details[order_id].status);
+        return true;
+    }
 
     function transfer_order_to_shipment(uint order_id) is_seller() has_ordered() public payable returns(OrderStatus) {
         require(order_id <= order_count, "Order doesn't exist");
@@ -271,6 +279,14 @@ contract DecentralizedShipment {
         shipment.id = shipment_count;
         shipment_details[shipment.id] = shipment;
         get_shipment_id[msg.sender] = shipment.id;
+        return true;
+    }
+    function receive_and_ship_the_order(uint order_id) is_shipment() public returns(bool) {
+        uint shipment_id = get_shipment_id[msg.sender];
+        require(order_details[order_id].shipment == shipment_id, "Not your order");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Already accepted this order");
+        order_details[order_id].status = OrderStatus.ontheway;
+        emit order_status_update(order_id, order_details[order_id].status);
         return true;
     }
     function update_status_to_ofd_and_damaged(uint order_id ) is_shipment() public returns(bool) {

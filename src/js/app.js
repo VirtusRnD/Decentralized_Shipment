@@ -185,6 +185,15 @@ App = {
 
 
  /**Seller Functions */
+ receive_and_prepare_the_order: function(){
+  console.log("Order Received and Prepared");
+  App.contracts.DecentralizedShipment.deployed().then(function(instance){
+    return instance.receive_and_prepare_the_order(1);
+  }).catch(function(err){
+    console.log(err);
+  });
+},
+
  transfer_order_to_shipment: function(){
    console.log("Order Transferred to Shipment");
    App.contracts.DecentralizedShipment.deployed().then(function(instance){
@@ -247,6 +256,14 @@ App = {
 
   
   /**Shipment Functions */
+  receive_and_ship_the_order: function(){
+    console.log("Order Received and Shipped");
+    App.contracts.DecentralizedShipment.deployed().then(function(instance){
+      return instance.receive_and_ship_the_order(1);
+    }).catch(function(err){
+      console.log(err);
+    });
+  },
   get_status: function(){
     var programList = document.getElementById("status");
     orderStatus = programList.options[programList.selectedIndex].value;
