@@ -1,13 +1,125 @@
+
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/src/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="../dist/output.css" rel="stylesheet">
-    <title>Vite App</title>
-  </head>
-  <body>
-    <h1 class="text-3xl font-bold underline m-24">Ali</h1>
+<html>
+<head>
+<title>Decentralized Shipment</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link href="./output.css" rel="stylesheet" type="text/css">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="js/web3.min.js"></script>
+<script src="js/truffle-contract.js"></script>
+<script src="js/app.js"></script>
+<script type="module" src="./js/GlobalVar.js"></script>
+
+</head>
+<body class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">
+  <div class="flex justify-center items-center bg-gray-700">
+    <h1 class="font-bold ml-20 mt-6 mb-5 text-6xl text-white self-center"> Decentralized Shipment Management </h1>
+  </div>
+  <div class="p-8 grid grid-cols-1 w-full">
+    <div id = "register" class="grid grid-cols-3 w-full items-center gap-4">
+      <div class=" flex justify-center items-center">
+        <div class="grid grid-cols-2 p-3 rounded-xl h-16 sm:w-72 w-full my-5 .white-glassmorphism bg-red-600 hover:bg-orange-400"><input type="radio" id = "customerinp" name="usertype" value="Customer"><label for="customerinp">Customer</label></div>
+      </div>
+      <div class=" flex justify-center items-center">
+        <div class="grid grid-cols-2 p-3 rounded-xl h-16 sm:w-72 w-full my-5 .white-glassmorphism bg-yellow-300 hover:bg-green-600"><input type="radio" id = "restaurantinp" name="usertype" value="Restaurant"><label for="restaurantinp">Seller</label></div>
+      </div>
+      <div class=" flex justify-center items-center">
+        <div class="grid grid-cols-2 p-3 rounded-xl h-16 sm:w-72 w-full my-5 .white-glassmorphism bg-blue-600 hover:bg-purple-600"><input type="radio" id = "courierinp" name="usertype" value="Courier"><label for="courierinp">Shipment</label></div>
+      </div>
+      <div class="flex justify-center items-center mt-8"></div>
+      <div class=" flex justify-center items-center mt-8">
+        <button onclick="App.register_function();" type="button" class="p-5 rounded-xl h-20 sm:w-96 w-full my-5 .white-glassmorphism bg-gradient-to-r from-gray-300 to-gray-600 font-bold">Register</button>
+      </div>
+      <div class="flex justify-center items-center mt-8"></div>
+    </div>
+
+    <div class="flex justify-center items-center w-full">
+      
+      <div class="p-10 flex justify-center w-full">
+        <div id = "customer_home" class="p-10 rounded-xl sm:w-5/6 w-full mx-6 my-5 .white-glassmorphism bg-gradient-to-r from-red-600 to-orange-400">
+          <div class="flex justify-center items-center">
+            <h1 class="font-bold underline">Customer</h1>
+          </div>
+          <br><br>
+          <h2 class="font-semibold mb-5">Select the products to be ordered:</h2>
+          
+          <select datalist id = "items" onchange="App.get_order_name();">
+            <option value="Product 1">Product 1</option>
+            <option value="Product 2">Product 2</option>
+            <option value="Product 3">Product 3</option>
+            <option value="Product 4">Product 4</option>
+            <option value="Product 5">Product 5</option>
+          </datalist>
+        </select>
+          <br><br>   
+          <button onclick="App.give_order();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Order</button>
+          <br><br><br><br>
+          <h2 class="font-semibold mb-5">Select the process for your order:</h2>
+          <div class="grid grid-cols-3">
+            <button onclick="App.check_order_status_customer();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Check Status</button>
+            <button onclick="App.cancel_order();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Cancel Order</button>
+            <button onclick="App.receive_order();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Confirm Delivery</button>
+          </div>
+        </div>
+        <div id = "courier_home" class="p-10 rounded-xl sm:w-5/6 w-full mx-6 my-5 .white-glassmorphism bg-gradient-to-r from-yellow-300 to-green-600">
+          <div class="flex justify-center items-center">
+            <h1 class="font-bold underline">Seller</h1>
+          </div>
+          <br><br>  
+          <div class="grid grid-cols-2">
+            <button onclick="App.transfer_order_to_shipment();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Ship the Product</button>
+            <button onclick="App.check_order_status_seller();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Check Status</button>
+          </div>
+        </div>
+        <div id = "restaurant_home" class="p-10 rounded-xl sm:w-5/6 w-full mx-6 my-5 .white-glassmorphism bg-gradient-to-r from-blue-600 to-purple-600">
+          <div class="flex justify-center items-center">
+            <h1 class="font-bold underline">Shipment</h1>
+          </div>
+          <br><br>
+          <h2 class="font-semibold mb-5">Update the order status:</h2>
+          
+          
+          <select datalist id = "status" onchange="App.get_status();">
+            <option value="1">Out for Delivery</option>
+            <option value="2">Arrived</option>
+            <option value="3">Cancelled</option>
+          </datalist>
+        </select>
+          <br><br>
+          <div class="grid grid-cols-2">
+            <div>
+              <input type="radio" id = "damaged" name="damageStatus" value="Damaged"><label for="damaged" class="font-semibold">Damaged</label>
+            </div>
+            <div>
+              <input type="radio" id = "notDamaged" name="damageStatus" value="Not_Damaged"><label for="notDamaged" class="font-semibold">Not Damaged</label>
+            </div>
+          </div>
+          <br>
+          <button onclick="// TODO:" type="button" class="rounded-xl bg-black text-white p-3 w-64">Update Status</button>
+          <br><br><br>
+          <h2 class="font-semibold mb-5">Check the order status:</h2>
+          <button onclick="App.check_order_status_shipment();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Check Status</button>
+        </div>
+      </div>
+
+    </div>
+    
+  </div>
+  <div class="grid grid-cols-3 bg-gray-700">
+    <div></div>
+    <div class="flex justify-center items-center">
+      <h1 class="font-semibold ml-20 mt-5 mb-5 text-2xl text-white self-center"> Hasan Ali ÖZKAN - Mehmet Kadri GOFRALILAR </h1>
+    </div>
+    <div class="flex justify-end items-center">
+      <div class="font-semibold ml-20 mt-5 mb-5 text-2xl text-white self-end mr-10">
+        <p>Copyright &copy; 2022 All Rights Reserved</p>
+      </div>
+    </div>
+  </div>
   </body>
 </html>
