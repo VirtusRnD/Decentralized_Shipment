@@ -1,13 +1,14 @@
-
 App = {
   web3Provider: null,
   contracts: {},
+  
 
   init: function() {
     return App.initWeb3();
   },
 
   initWeb3: function() {
+    
     if (typeof web3 !== 'undefined') {
       // If a web3 instance is already provided by Meta Mask.
       App.web3Provider = web3.currentProvider;
@@ -21,6 +22,7 @@ App = {
   },
 
   initContract: function() {
+    
     $.getJSON("DecentralizedShipment.json", function(election) {
       // Instantiate a new truffle contract from the artifact
       App.contracts.DecentralizedShipment = TruffleContract(election);
@@ -47,6 +49,8 @@ App = {
 
   register_function : function() {
     var flag = 0;
+    
+    
     if (document.getElementById('customerinp').checked) {
       flag =1;
     }
@@ -114,37 +118,42 @@ App = {
       return  instance.check_order_status_customer(1,1);
     }).then(
       function(result){
-        console.log(result);
-        if(result[0].c[0] ==0 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
-        }else if(result[0].c[0] ==0 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is damaged");
+        console.log(result[0].c[0]);
+        console.log(result[1].c[0]);
+        if(result[0].c[0] == 0 && result[1].c[0] == 1){
+          console.log(sessionStorage.getItem("productName") + " order is ordered and is not damaged");
+        }else if(result[0].c[0] == 0 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is ordered and is damaged");
         }
-        else if(result[0].c[0] ==1 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 1 && result[1].c[0] == 1){
+          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
+        }
+        else if(result[0].c[0] == 1 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is preparing and is  damaged");
+        }
+        else if(result[0].c[0] == 2 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is ontheway and is not damaged");
         }
-        else if(result[0].c[0] ==1 && result[1].c[0] ==1){
+        else if(result[0].c[0] == 2 && result[1].c[0] == 0){
           console.log(sessionStorage.getItem("productName") + " order is ontheway and is  damaged");
         }
-        else if(result[0].c[0] ==2 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 3 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is not damaged");
         }
-        else if(result[0].c[0] ==2 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is  damaged");
+        else if(result[0].c[0] == 3 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is damaged");
         }
-        else if(result[0].c[0] ==3 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 4 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is received and is not damaged");
         }
-        else if(result[0].c[0] ==3 && result[1].c[0] ==1){
+        else if(result[0].c[0] == 4 && result[1].c[0] == 0){
           console.log(sessionStorage.getItem("productName") + " order is received and is damaged");
-        }
-        else if(result[0].c[0] ==4 && result[1].c[0] ==0){
+        }else if(result[0].c[0] == 5 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
         }
-        else if(result[0].c[0] ==4 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
+        else if(result[0].c[0] == 5  && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is cancelled and is damaged");
         }
-          
       }
     ).catch(function(err){
       console.log(err);
@@ -156,13 +165,7 @@ App = {
     console.log("Order Cancelled");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
       return instance.cancel_order(1);
-    }).then(
-      function(result){
-        if(result.c[0] ===4){
-          alert("Order Cancelled Successfully");
-        }
-      }
-    ).catch(function(err){
+    }).catch(function(err){
       console.log(err);
     });
   },
@@ -171,13 +174,7 @@ App = {
     console.log("Order Received");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
       return instance.receive_order(1);
-    }).then(
-      function(result){
-        if(result.c[0] ===3){
-          alert("Order Received Successfully");
-        }
-      }
-    ).catch(function(err){
+    }).catch(function(err){
       console.log(err);
     });
   },
@@ -198,12 +195,7 @@ App = {
    console.log("Order Transferred to Shipment");
    App.contracts.DecentralizedShipment.deployed().then(function(instance){
      return instance.transfer_order_to_shipment(1);
-   }).then(
-     function(result){
-        if(result.c[0] ===1){
-          alert("Order Transferred Successfully");
-        }
-      }).catch(function(err){
+   }).catch(function(err){
         console.log(err);
       });
  },
@@ -217,34 +209,41 @@ App = {
       return  instance.check_order_status_seller(1,1);
     }).then(
       function(result){
-        if(result[0].c[0] ==0 && result[1].c[0] ==0){
-          console.log( sessionStorage.getItem("productName") + " order is preparing and is not damaged");
-        }else if(result[0].c[0] ==0 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is damaged");
+        console.log(result[0].c[0]);
+        console.log(result[1].c[0]);
+        if(result[0].c[0] == 0 && result[1].c[0] == 1){
+          console.log(sessionStorage.getItem("productName") + " order is ordered and is not damaged");
+        }else if(result[0].c[0] == 0 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is ordered and is damaged");
         }
-        else if(result[0].c[0] ==1 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 1 && result[1].c[0] == 1){
+          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
+        }
+        else if(result[0].c[0] == 1 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is preparing and is  damaged");
+        }
+        else if(result[0].c[0] == 2 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is ontheway and is not damaged");
         }
-        else if(result[0].c[0] ==1 && result[1].c[0] ==1){
+        else if(result[0].c[0] == 2 && result[1].c[0] == 0){
           console.log(sessionStorage.getItem("productName") + " order is ontheway and is  damaged");
         }
-        else if(result[0].c[0] ==2 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 3 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is not damaged");
         }
-        else if(result[0].c[0] ==2 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is  damaged");
+        else if(result[0].c[0] == 3 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is damaged");
         }
-        else if(result[0].c[0] ==3 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 4 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is received and is not damaged");
         }
-        else if(result[0].c[0] ==3 && result[1].c[0] ==1){
+        else if(result[0].c[0] == 4 && result[1].c[0] == 0){
           console.log(sessionStorage.getItem("productName") + " order is received and is damaged");
-        }
-        else if(result[0].c[0] ==4 && result[1].c[0] ==0){
+        }else if(result[0].c[0] == 5 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
         }
-        else if(result[0].c[0] ==4 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
+        else if(result[0].c[0] == 5  && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is cancelled and is damaged");
         }
           
       }
@@ -252,7 +251,6 @@ App = {
       console.log(err);
     });
   },
-
 
   
   /**Shipment Functions */
@@ -274,11 +272,11 @@ App = {
     var flag = 0;
     if (document.getElementById('damaged').checked) {
       flag =1;
-      console.log("damaged");
+   
     }
     if (document.getElementById('notDamaged').checked) {
       flag =2;
-      console.log("notDamaged");
+    
     }
 
     console.log("Order Status Updated");
@@ -325,7 +323,7 @@ App = {
   },
 
   
-  check_order_status_shipment : function(){
+ check_order_status_shipment : function(){
 
     console.log("Order Status");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
@@ -333,36 +331,41 @@ App = {
       return  instance.check_order_status_shipment(1,1);
     }).then( 
       function(result){
-        if(result[0].c[0] ==0 && result[1].c[0] ==0){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
-        }else if(result[0].c[0] ==0 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is damaged");
+        
+        if(result[0].c[0] == 0 && result[1].c[0] == 1){
+          console.log(sessionStorage.getItem("productName") + " order is ordered and is not damaged");
+        }else if(result[0].c[0] == 0 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is ordered and is damaged");
         }
-        else if(result[0].c[0] ==1 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 1 && result[1].c[0] == 1){
+          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
+        }
+        else if(result[0].c[0] == 1 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is preparing and is  damaged");
+        }
+        else if(result[0].c[0] == 2 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is ontheway and is not damaged");
         }
-        else if(result[0].c[0] ==1 && result[1].c[0] ==1){
+        else if(result[0].c[0] == 2 && result[1].c[0] == 0){
           console.log(sessionStorage.getItem("productName") + " order is ontheway and is  damaged");
         }
-        else if(result[0].c[0] ==2 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 3 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is not damaged");
         }
-        else if(result[0].c[0] ==2 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is  damaged");
+        else if(result[0].c[0] == 3 && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is damaged");
         }
-        else if(result[0].c[0] ==3 && result[1].c[0] ==0){
+        else if(result[0].c[0] == 4 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is received and is not damaged");
         }
-        else if(result[0].c[0] ==3 && result[1].c[0] ==1){
+        else if(result[0].c[0] == 4 && result[1].c[0] == 0){
           console.log(sessionStorage.getItem("productName") + " order is received and is damaged");
-        }
-        else if(result[0].c[0] ==4 && result[1].c[0] ==0){
+        }else if(result[0].c[0] == 5 && result[1].c[0] == 1){
           console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
         }
-        else if(result[0].c[0] ==4 && result[1].c[0] ==1){
-          console.log(sessionStorage.getItem("productName") + " order cancelled and is not damaged");
+        else if(result[0].c[0] == 5  && result[1].c[0] == 0){
+          console.log(sessionStorage.getItem("productName") + " order is cancelled and is damaged");
         }
-          
       }).catch(function(err){
       console.log(err);
     });

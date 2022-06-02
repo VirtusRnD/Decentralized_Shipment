@@ -16,6 +16,7 @@
 <script src="js/app.js"></script>
 <script type="module" src="./js/productName.js"></script>
 <script type="module" src="./js/orderStatus.js"></script>
+<script type="module" src="./js/productId.js"></script>
 
 </head>
 <body class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">
@@ -74,7 +75,7 @@
           </div>
           <br><br>  
           <div class="grid grid-cols-1">
-            <button onclick="// TODO:" type="button" class="rounded-xl bg-black text-white p-3 w-64">Receive the Order</button>
+            <button onclick="App.receive_and_prepare_the_order();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Receive the Order</button>
           </div>
           <br><br>  
           <div class="grid grid-cols-2">
@@ -88,7 +89,7 @@
           </div>
           <br><br>  
           <div class="grid grid-cols-1">
-            <button onclick="// TODO:" type="button" class="rounded-xl bg-black text-white p-3 w-64">Receive the Product</button>
+            <button onclick="App.receive_and_ship_the_order();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Receive the Product</button>
           </div>
           <br><br>  
           <h2 class="font-semibold mb-5">Update the order status:</h2>
