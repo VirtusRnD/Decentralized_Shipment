@@ -14,8 +14,8 @@ This project is based on handling common shipment problems that we all probably 
     <li><a href="#team-members">Team Members</a></li>
     <li><a href="#system-design">System Design</a></li>
     <li><a href="#system-usage">System Usage</a></li>
-    <li><a href="#mobile-application-ui">Mobile Application UI</a></li>
-    <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#ui-screenshot">UI Screenshot</a></li>
+    <li><a href="#technologies-we-used">Technologies We Used</a></li>
   </ol>
 </details>
 
@@ -99,12 +99,16 @@ in one piece and if not, find the guilty party faster and clearer.
 
 
 
-## Mobile Application UI
+## UI Screenshot
 
-<!--Will be added later-->
+<img src="src/UI.png" alt="UI Image" width="1000" height="550">
 
-# Requirements
+# Technologies We Used
 
-*
-*
-<!--Will be added later-->
+* NodeJS
+* Ganache
+* Truffle
+* HTML
+* CSS
+* Tailwindcss
+* Solidity
