@@ -13,7 +13,7 @@ contract DecentralizedShipment {
         preparing,  // Order is being prepared.
         onthewaytoshipment, // Order is on the way to the shipment company.
         onthewaytocustomer, // Order is on the way to the customer.
-        ontheway,   //  Order is on the way.
+        inbranch,   //  Order is on the way.
         outfordelivery, // Order is out for delivery.
         received,   //  Order is received.
         cancelled   //  Order is cancelled by user.
@@ -187,9 +187,9 @@ contract DecentralizedShipment {
             return (1,1);
         }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (1,0);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.damaged) {
+        }else if(order_details[order_id].status == OrderStatus.inbranch && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (2,1);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.not_damaged) {
+        }else if(order_details[order_id].status == OrderStatus.inbranch && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (2,0);
         }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (3,1);
@@ -228,6 +228,8 @@ contract DecentralizedShipment {
         */
     function receive_order(uint order_id) is_customer() has_ordered() public returns(bool)  {
         require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status != OrderStatus.cancelled, "Order is already cancelled");
+        require(order_details[order_id].status != OrderStatus.received, "Order is confirmed as received by the shipment employee");
         require(order_details[order_id].status == OrderStatus.outfordelivery, "Order is not out for delivery");
         require(order_details[order_id].customer == get_customer_id[msg.sender], "You don't have this order");
         order_details[order_id].status = OrderStatus.received;
@@ -297,9 +299,9 @@ contract DecentralizedShipment {
             return (1,1);
         }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (1,0);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.damaged) {
+        }else if(order_details[order_id].status == OrderStatus.inbranch && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (2,1);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.not_damaged) {
+        }else if(order_details[order_id].status == OrderStatus.inbranch && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (2,0);
         }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (3,1);
@@ -339,8 +341,9 @@ contract DecentralizedShipment {
     */
     function receive_and_ship_the_order(uint order_id) is_shipment() public returns(bool) {
         uint shipment_id = get_shipment_id[msg.sender];
+        require(order_details[order_id].status == OrderStatus.onthewaytoshipment, "Already accepted this order");
         require(shipment_details[shipment_id].cur_order == 0, "Already delivering another order");
-        order_details[order_id].status = OrderStatus.onthewaytoshipment;
+        order_details[order_id].status = OrderStatus.inbranch;
         order_details[order_id].shipment = get_shipment_id[msg.sender];
         shipment_details[shipment_id].cur_order = order_id;
         emit order_status_update(order_id, order_details[order_id].status);
@@ -350,7 +353,7 @@ contract DecentralizedShipment {
 
     function update_status_to_otwtc_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status == OrderStatus.inbranch, "Order is not in the branch");
         order_details[order_id].status = OrderStatus.onthewaytocustomer;
         order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
@@ -360,9 +363,8 @@ contract DecentralizedShipment {
     }
     function update_status_to_otwtc_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status == OrderStatus.inbranch, "Order is not in the branch");
         order_details[order_id].status = OrderStatus.onthewaytocustomer;
-        order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
         emit order_damaged_update(order_id, order_details[order_id].pStatus);
@@ -375,7 +377,7 @@ contract DecentralizedShipment {
     */
     function update_status_to_ofd_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status == OrderStatus.onthewaytocustomer, "Order is not on the way to customer");
         order_details[order_id].status = OrderStatus.outfordelivery;
         order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
@@ -389,7 +391,7 @@ contract DecentralizedShipment {
     */
     function update_status_to_ofd_and_not_damaged(uint order_id) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status == OrderStatus.onthewaytocustomer, "Order is not on the way to customer");
         order_details[order_id].status = OrderStatus.outfordelivery;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
@@ -401,7 +403,8 @@ contract DecentralizedShipment {
     */
     function update_status_to_received_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status != OrderStatus.cancelled , "Order is already cancelled");
+        require(order_details[order_id].status == OrderStatus.onthewaytocustomer || order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way to customer or not out for delivery");
         order_details[order_id].status = OrderStatus.received;
         order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
@@ -415,7 +418,8 @@ contract DecentralizedShipment {
     */
     function update_status_to_received_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
+        require(order_details[order_id].status != OrderStatus.cancelled , "Order is already cancelled");
+        require(order_details[order_id].status == OrderStatus.onthewaytocustomer || order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way to customer or not out for delivery");
         order_details[order_id].status = OrderStatus.received;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
@@ -464,9 +468,9 @@ contract DecentralizedShipment {
             return (1,1);
         }else if(order_details[order_id].status == OrderStatus.preparing && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (1,0);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.damaged) {
+        }else if(order_details[order_id].status == OrderStatus.onthewaytocustomer && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (2,1);
-        }else if(order_details[order_id].status == OrderStatus.ontheway && order_details[order_id].pStatus == ProductStatus.not_damaged) {
+        }else if(order_details[order_id].status == OrderStatus.onthewaytocustomer && order_details[order_id].pStatus == ProductStatus.not_damaged) {
              return (2,0);
         }else if(order_details[order_id].status == OrderStatus.outfordelivery && order_details[order_id].pStatus == ProductStatus.damaged) {
              return (3,1);
