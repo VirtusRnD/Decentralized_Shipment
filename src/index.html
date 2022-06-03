@@ -1,9 +1,8 @@
-
 <!DOCTYPE html>
 <html>
 <head>
 <title>Decentralized Shipment</title>
-<link rel="icon" type="image/x-icon" href="../Project Proposal Presentation/ethereum-logo.png">
+<link rel="icon" type="image/x-icon" href="./ethereum-logo.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -16,15 +15,16 @@
 <script src="js/app.js"></script>
 <script type="module" src="./js/productName.js"></script>
 <script type="module" src="./js/orderStatus.js"></script>
-<script type="module" src="./js/productId.js"></script>
 
 </head>
 <body class="bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500">
+  <!-- This will be the main page for the user to interact with the contracts -->
   <div class="flex justify-center items-center bg-gray-700">
     <h1 class="font-bold ml-20 mt-6 mb-5 text-6xl text-white self-center"> Decentralized Shipment Management </h1>
   </div>
   <div class="p-8 grid grid-cols-1 w-full">
     <div id = "register" class="grid grid-cols-3 w-full items-center gap-4">
+      <!-- This will be the register part of the page for the user to register with the contracts -->
       <div class=" flex justify-center items-center">
         <div class="grid grid-cols-2 p-3 rounded-xl h-16 sm:w-72 w-full my-5 .white-glassmorphism bg-red-600 hover:bg-orange-400"><input type="radio" id = "customerinp" name="usertype" value="Customer"><label for="customerinp">Customer</label></div>
       </div>
@@ -42,15 +42,16 @@
     </div>
 
     <div class="flex justify-center items-center w-full">
-      
+      <!-- This will be the part for the user to execute the contract functions -->
       <div class="p-10 flex justify-center w-full">
         <div id = "customer_home" class="p-10 rounded-xl sm:w-5/6 w-full mx-6 my-5 .white-glassmorphism bg-gradient-to-r from-red-600 to-orange-400">
+          <!--- This will be the home page for the customer -->
           <div class="flex justify-center items-center">
             <h1 class="font-bold underline">Customer</h1>
           </div>
           <br><br>
+          <!-- Order selection --> 
           <h2 class="font-semibold mb-5">Select the products to be ordered:</h2>
-          
           <select datalist id = "items" onchange="App.get_order_name();">
             <option value="Product 1">Product 1</option>
             <option value="Product 2">Product 2</option>
@@ -58,50 +59,61 @@
             <option value="Product 4">Product 4</option>
             <option value="Product 5">Product 5</option>
           </datalist>
-        </select>
+          </select>
           <br><br>   
+          <!-- Order button -->
           <button onclick="App.give_order();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Order</button>
           <br><br><br><br>
+          <!-- Order Operations -->
           <h2 class="font-semibold mb-5">Select the process for your order:</h2>
           <div class="grid grid-cols-3">
+            <!-- Uses the contracts to execute the customer functions -->
             <button onclick="App.check_order_status_customer();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Check Status</button>
             <button onclick="App.cancel_order();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Cancel Order</button>
             <button onclick="App.receive_order();" type="button" class="rounded-xl bg-black text-white p-3 w-36">Confirm Delivery</button>
           </div>
         </div>
         <div id = "courier_home" class="p-10 rounded-xl sm:w-5/6 w-full mx-6 my-5 .white-glassmorphism bg-gradient-to-r from-yellow-300 to-green-600">
+          <!--- This will be the home page for the seller -->
           <div class="flex justify-center items-center">
             <h1 class="font-bold underline">Seller</h1>
           </div>
           <br><br>  
+          <!-- Receive order button -->
+          <!-- Needed for the interaction between customer and seller -->
           <div class="grid grid-cols-1">
             <button onclick="App.receive_and_prepare_the_order();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Receive the Order</button>
           </div>
           <br><br>  
           <div class="grid grid-cols-2">
+            <!-- Uses the contracts to execute the seller functions -->
             <button onclick="App.transfer_order_to_shipment();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Ship the Product</button>
             <button onclick="App.check_order_status_seller();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Check Status</button>
           </div>
         </div>
         <div id = "restaurant_home" class="p-10 rounded-xl sm:w-5/6 w-full mx-6 my-5 .white-glassmorphism bg-gradient-to-r from-blue-600 to-purple-600">
+          <!--- This will be the home page for the shipment company employee -->
           <div class="flex justify-center items-center">
             <h1 class="font-bold underline">Shipment</h1>
           </div>
           <br><br>  
+          <!-- Receive product from seller button -->
+          <!-- Needed for the interaction between seller and shipment company employee -->
           <div class="grid grid-cols-1">
             <button onclick="App.receive_and_ship_the_order();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Receive the Product</button>
           </div>
           <br><br>  
+          <!-- Update order status in terms of position -->
           <h2 class="font-semibold mb-5">Update the order status:</h2>
-          
-          
           <select datalist id = "status" onchange="App.get_status();">
-            <option value="1">Out for Delivery</option>
-            <option value="2">Arrived</option>
-            <option value="3">Cancelled</option>
+            <option value="1">On The Way To Customer</option>
+            <option value="2">Out for Delivery</option>
+            <option value="3">Arrived</option>
+            <option value="4">Cancelled</option>
           </datalist>
-        </select>
+          </select>
           <br><br>
+          <!-- Update order status as damaged or not -->
           <div class="grid grid-cols-2">
             <div>
               <input type="radio" id = "damaged" name="damageStatus" value="Damaged"><label for="damaged" class="font-semibold">Damaged</label>
@@ -111,17 +123,17 @@
             </div>
           </div>
           <br>
+          <!-- Update order status button -->
           <button onclick="App.update_status();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Update Status</button>
           <br><br><br>
           <h2 class="font-semibold mb-5">Check the order status:</h2>
           <button onclick="App.check_order_status_shipment();" type="button" class="rounded-xl bg-black text-white p-3 w-64">Check Status</button>
         </div>
       </div>
-
     </div>
-    
   </div>
   <div class="grid grid-cols-3 bg-gray-700">
+    <!-- Footer -->
     <div></div>
     <div class="flex justify-center items-center">
       <h1 class="font-semibold ml-20 mt-5 mb-5 text-2xl text-white self-center"> Hasan Ali ÖZKAN - Mehmet Kadri GOFRALILAR </h1>
@@ -132,5 +144,5 @@
       </div>
     </div>
   </div>
-  </body>
+</body>
 </html>

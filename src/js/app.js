@@ -2,7 +2,6 @@ App = {
   web3Provider: null,
   contracts: {},
   
-
   init: function() {
     return App.initWeb3();
   },
@@ -50,7 +49,6 @@ App = {
   register_function : function() {
     var flag = 0;
     
-    
     if (document.getElementById('customerinp').checked) {
       flag =1;
     }
@@ -65,23 +63,21 @@ App = {
       App.contracts.DecentralizedShipment.deployed().then(function(instance) {
         return instance.register_customer();
       }).catch(function(err) {
-        console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
     }
     if (flag == 2) {
-      console.log("here");
       App.contracts.DecentralizedShipment.deployed().then(function(instance) {
         return instance.register_seller();
       }).catch(function(err) {
-        console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
     }
     if (flag == 3) {
-      console.log("here");
       App.contracts.DecentralizedShipment.deployed().then(function(instance) {
         return instance.register_shipment();
       }).catch(function(err) {
-        console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
     }
    
@@ -91,7 +87,6 @@ App = {
     var programList = document.getElementById("items");
     productName = programList.options[programList.selectedIndex].value;
     sessionStorage.setItem("productName", productName);
-    console.log(productName);
   },
 
 
@@ -101,81 +96,89 @@ App = {
   give_order : function(){
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
       return instance.give_order([1],1);
-    }).then(
-      function(){
-        console.log(sessionStorage.getItem("productName") + " Order Placed");
-        
-      }
-    ).catch(function(err){
-      console.log(err);
+    }).then(function(result){
+      alert(sessionStorage.getItem("productName") + " Order Placed");
+    }).catch(function(err){
+      alert((err.message.split('"')[9].split("revert ")[1]));
     });
   },
   check_order_status_customer : function(){
-
-    console.log("Order Status");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
-
-      return  instance.check_order_status_customer(1,1);
-    }).then(
+      return instance.check_order_status_customer(1,1);
+    }).then( 
       function(result){
-        console.log(result[0].c[0]);
-        console.log(result[1].c[0]);
         if(result[0].c[0] == 0 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is ordered and is not damaged");
-        }else if(result[0].c[0] == 0 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is ordered and is damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ordered and is not damaged"));
+        }
+        else if(result[0].c[0] == 0 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ordered and is damaged"));
         }
         else if(result[0].c[0] == 1 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is preparing and is not damaged"));
         }
         else if(result[0].c[0] == 1 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is  damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is preparing and is damaged"));
         }
         else if(result[0].c[0] == 2 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is ontheway and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to shipment and is not damaged"));
         }
         else if(result[0].c[0] == 2 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is ontheway and is  damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to shipment and is  damaged"));
         }
         else if(result[0].c[0] == 3 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to customer and is not damaged"));
         }
         else if(result[0].c[0] == 3 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to customer and is damaged"));
         }
         else if(result[0].c[0] == 4 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is received and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ontheway and is not damaged"));
         }
         else if(result[0].c[0] == 4 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is received and is damaged");
-        }else if(result[0].c[0] == 5 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ontheway and is damaged"));
         }
-        else if(result[0].c[0] == 5  && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is damaged");
+        else if(result[0].c[0] == 5 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is outfordelivery and is not damaged"));
+        }
+        else if(result[0].c[0] == 5 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is outfordelivery and is damaged"));
+        }
+        else if(result[0].c[0] == 6 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is received and is not damaged"));
+        }
+        else if(result[0].c[0] == 6 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is received and is damaged"));
+        }
+        else if(result[0].c[0] == 7 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is cancelled and is not damaged"));
+        }
+        else if(result[0].c[0] == 7  && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is cancelled and is damaged"));
         }
       }
     ).catch(function(err){
-      console.log(err);
+      alert((err.message.split('"')[9].split("revert ")[1]));
     });
   },
 
 
   cancel_order: function(){
-    console.log("Order Cancelled");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
       return instance.cancel_order(1);
+    }).then(function(result){
+      alert("Order Cancelled");
     }).catch(function(err){
-      console.log(err);
+      alert((err.message.split('"')[9].split("revert ")[1]));
     });
   },
 
   receive_order: function(){
-    console.log("Order Received");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
       return instance.receive_order(1);
+    }).then(function(result){
+      alert("Order Received");
     }).catch(function(err){
-      console.log(err);
+      alert((err.message.split('"')[9].split("revert ")[1]));
     });
   },
   
@@ -183,141 +186,182 @@ App = {
 
  /**Seller Functions */
  receive_and_prepare_the_order: function(){
-  console.log("Order Received and Prepared");
   App.contracts.DecentralizedShipment.deployed().then(function(instance){
     return instance.receive_and_prepare_the_order(1);
+  }).then(function(result){
+    alert("Order Received and Prepared");
   }).catch(function(err){
-    console.log(err);
+    alert((err.message.split('"')[9].split("revert ")[1]));
   });
 },
 
  transfer_order_to_shipment: function(){
-   console.log("Order Transferred to Shipment");
-   App.contracts.DecentralizedShipment.deployed().then(function(instance){
-     return instance.transfer_order_to_shipment(1);
-   }).catch(function(err){
-        console.log(err);
-      });
+  App.contracts.DecentralizedShipment.deployed().then(function(instance){
+    return instance.transfer_order_to_shipment(1);
+  }).then(function(result){
+    alert("Order Transferred to Shipment");
+  }).catch(function(err){
+    alert((err.message.split('"')[9].split("revert ")[1]));
+  });
  },
 
 
   check_order_status_seller : function(){
-
-    console.log("Order Status");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
-
-      return  instance.check_order_status_seller(1,1);
-    }).then(
+      return instance.check_order_status_seller(1,1);
+    }).then( 
       function(result){
-        console.log(result[0].c[0]);
-        console.log(result[1].c[0]);
         if(result[0].c[0] == 0 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is ordered and is not damaged");
-        }else if(result[0].c[0] == 0 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is ordered and is damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ordered and is not damaged"));
+        }
+        else if(result[0].c[0] == 0 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ordered and is damaged"));
         }
         else if(result[0].c[0] == 1 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is preparing and is not damaged"));
         }
         else if(result[0].c[0] == 1 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is  damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is preparing and is damaged"));
         }
         else if(result[0].c[0] == 2 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is ontheway and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to shipment and is not damaged"));
         }
         else if(result[0].c[0] == 2 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is ontheway and is  damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to shipment and is  damaged"));
         }
         else if(result[0].c[0] == 3 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to customer and is not damaged"));
         }
         else if(result[0].c[0] == 3 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to customer and is damaged"));
         }
         else if(result[0].c[0] == 4 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is received and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ontheway and is not damaged"));
         }
         else if(result[0].c[0] == 4 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is received and is damaged");
-        }else if(result[0].c[0] == 5 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ontheway and is damaged"));
         }
-        else if(result[0].c[0] == 5  && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is damaged");
+        else if(result[0].c[0] == 5 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is outfordelivery and is not damaged"));
         }
-          
+        else if(result[0].c[0] == 5 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is outfordelivery and is damaged"));
+        }
+        else if(result[0].c[0] == 6 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is received and is not damaged"));
+        }
+        else if(result[0].c[0] == 6 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is received and is damaged"));
+        }
+        else if(result[0].c[0] == 7 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is cancelled and is not damaged"));
+        }
+        else if(result[0].c[0] == 7  && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is cancelled and is damaged"));
+        }
       }
     ).catch(function(err){
-      console.log(err);
+      alert((err.message.split('"')[9].split("revert ")[1]));
     });
   },
 
   
   /**Shipment Functions */
+
+  /** This method is used for transferring the order from the shipment branch to on its way to the customer */
   receive_and_ship_the_order: function(){
-    console.log("Order Received and Shipped");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
       return instance.receive_and_ship_the_order(1);
+    }).then(function(result){
+      alert("Order Received and Shipped");
     }).catch(function(err){
-      console.log(err);
+      alert((err.message.split('"')[9].split("revert ")[1]));
     });
   },
   get_status: function(){
     var programList = document.getElementById("status");
     orderStatus = programList.options[programList.selectedIndex].value;
-    console.log(orderStatus);
   },
 
   update_status : function(){
     var flag = 0;
     if (document.getElementById('damaged').checked) {
       flag =1;
-   
     }
     if (document.getElementById('notDamaged').checked) {
       flag =2;
-    
     }
 
-    console.log("Order Status Updated");
     if(orderStatus == 1 && flag === 2){
       App.contracts.DecentralizedShipment.deployed().then(function(instance){
-            instance.update_status_to_ofd_and_not_damaged(1);
+        return instance.update_status_to_otwtc_and_not_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated");
       }).catch(function(err){
-        console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
     }
     if(orderStatus == 1 && flag === 1){
       App.contracts.DecentralizedShipment.deployed().then(function(instance){
-        instance.update_status_to_ofd_and_damaged(1);
+        return instance.update_status_to_otwtc_and_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated");
       }).catch(function(err){
-      console.log(err);
-      });
-    }if(orderStatus == 2 && flag == 2){
-      App.contracts.DecentralizedShipment.deployed().then(function(instance){
-            instance.update_status_to_received_and_not_damaged(1);
-      }).catch(function(err){
-        console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
     }
-    if(orderStatus == 2 && flag ==1){
+    if(orderStatus == 2 && flag === 2){
       App.contracts.DecentralizedShipment.deployed().then(function(instance){
-        instance.update_status_to_received_and_damaged(1);
+        return instance.update_status_to_ofd_and_not_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated");
       }).catch(function(err){
-      console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
-    }if(orderStatus == 3 && flag == 2){
+    }
+    if(orderStatus == 2 && flag === 1){
       App.contracts.DecentralizedShipment.deployed().then(function(instance){
-            instance.update_status_to_cancelled_and_not_damaged(1);
+        return instance.update_status_to_ofd_and_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated");
       }).catch(function(err){
-        console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
+      });
+    }
+    if(orderStatus == 3 && flag == 2){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+        return instance.update_status_to_received_and_not_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated")
+      }).catch(function(err){
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
     }
     if(orderStatus == 3 && flag ==1){
       App.contracts.DecentralizedShipment.deployed().then(function(instance){
-        instance.update_status_to_cancelled_and_damaged(1);
+        return instance.update_status_to_received_and_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated")
       }).catch(function(err){
-      console.log(err);
+        alert((err.message.split('"')[9].split("revert ")[1]));
+      });
+    }
+    if(orderStatus == 4 && flag == 2){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+        return instance.update_status_to_cancelled_and_not_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated")
+      }).catch(function(err){
+        alert((err.message.split('"')[9].split("revert ")[1]));
+      });
+    }
+    if(orderStatus == 4 && flag ==1){
+      App.contracts.DecentralizedShipment.deployed().then(function(instance){
+        return instance.update_status_to_cancelled_and_damaged(1);
+      }).then(function(result){
+        alert("Order Status Updated")
+      }).catch(function(err){
+        alert((err.message.split('"')[9].split("revert ")[1]));
       });
     }
   },
@@ -325,74 +369,63 @@ App = {
   
  check_order_status_shipment : function(){
 
-    console.log("Order Status");
     App.contracts.DecentralizedShipment.deployed().then(function(instance){
-
-      return  instance.check_order_status_shipment(1,1);
+      return instance.check_order_status_shipment(1,1);
     }).then( 
       function(result){
-        
         if(result[0].c[0] == 0 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is ordered and is not damaged");
-        }else if(result[0].c[0] == 0 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is ordered and is damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ordered and is not damaged"));
+        }
+        else if(result[0].c[0] == 0 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ordered and is damaged"));
         }
         else if(result[0].c[0] == 1 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is preparing and is not damaged"));
         }
         else if(result[0].c[0] == 1 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is preparing and is  damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is preparing and is damaged"));
         }
         else if(result[0].c[0] == 2 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is ontheway and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to shipment and is not damaged"));
         }
         else if(result[0].c[0] == 2 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is ontheway and is  damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to shipment and is  damaged"));
         }
         else if(result[0].c[0] == 3 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to customer and is not damaged"));
         }
         else if(result[0].c[0] == 3 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is outfordelivery and is damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is on the way to customer and is damaged"));
         }
         else if(result[0].c[0] == 4 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is received and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ontheway and is not damaged"));
         }
         else if(result[0].c[0] == 4 && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is received and is damaged");
-        }else if(result[0].c[0] == 5 && result[1].c[0] == 1){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is not damaged");
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is ontheway and is damaged"));
         }
-        else if(result[0].c[0] == 5  && result[1].c[0] == 0){
-          console.log(sessionStorage.getItem("productName") + " order is cancelled and is damaged");
+        else if(result[0].c[0] == 5 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is outfordelivery and is not damaged"));
         }
-      }).catch(function(err){
-      console.log(err);
+        else if(result[0].c[0] == 5 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is outfordelivery and is damaged"));
+        }
+        else if(result[0].c[0] == 6 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is received and is not damaged"));
+        }
+        else if(result[0].c[0] == 6 && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is received and is damaged"));
+        }
+        else if(result[0].c[0] == 7 && result[1].c[0] == 1){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is cancelled and is not damaged"));
+        }
+        else if(result[0].c[0] == 7  && result[1].c[0] == 0){
+          alert("Order Status\nOrder that contains " + (sessionStorage.getItem("productName") + " is cancelled and is damaged"));
+        }
+      }
+    ).catch(function(err){
+      alert((err.message.split('"')[9].split("revert ")[1]));
     });
   },
-
-
-  
-  bindEvents: function() {
-    $(document).on('click', '.btn-adopt', App.handleAdopt);
-  },
-
-  markAdopted: function(adopters, account) {
-    /*
-     * Replace me...
-     */
-  },
-
-  handleAdopt: function(event) {
-    event.preventDefault();
-
-    var petId = parseInt($(event.target).data('id'));
-
-    /*
-     * Replace me...
-     */
-  }
-
 };
 
 $(function() {
