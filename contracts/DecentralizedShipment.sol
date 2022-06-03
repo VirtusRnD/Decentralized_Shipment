@@ -1,65 +1,67 @@
 pragma solidity ^0.5.0;
 
 contract DecentralizedShipment {
-    uint product_cost = 5;
-    uint shipment_count = 0;
-    uint seller_count = 0;
-    uint customer_count = 0;
-    uint order_count = 0;
-    uint time_limit = 5;
-    
-  
+    uint product_cost = 5; //Cost of the product
+    uint shipment_count = 0; //Count of the shipment company employee
+    uint seller_count = 0; //Count of the seller 
+    uint customer_count = 0; //Count of the customer
+    uint order_count = 0; //Count of the order
+
      // Order status enum that will be used in our system in order to know the status of the order.
     enum OrderStatus {
-        ordered,
+        ordered,    // The order has been placed by the customer.
         preparing,  // Order is being prepared.
+        onthewaytoshipment, // Order is on the way to the shipment company.
+        onthewaytocustomer, // Order is on the way to the customer.
         ontheway,   //  Order is on the way.
         outfordelivery, // Order is out for delivery.
         received,   //  Order is received.
         cancelled   //  Order is cancelled by user.
     }
     enum ProductStatus{
-        damaged,
-        not_damaged
+        damaged, //Status of the product is damaged
+        not_damaged //Status of the product is not damaged
     }
     
     // Order struct which contains order details that will be used in our system in order to create order.
     struct Order{
         uint id;                    //This is the ID of the order and it's unique.
-        uint[] products;           //This is the array of products that will be ordered.
+        uint[] products;            //This is the array of products that will be ordered.
         uint price;                 //This is the total price of the order.
         uint seller;                //This is the seller of the order.
         uint shipment;              // This is the shipment of the order.    
         uint customer;              //This is the customer of the order.
-        OrderStatus status;     //This is the status of the order.
-        ProductStatus pStatus;           //This represents the order being damaged or not.
+        OrderStatus status;         //This is the status of the order.
+        ProductStatus pStatus;      //This represents the order being damaged or not.
     }
  
 
+    // This is the struct of the customer which contains customer details.
     struct Customer {
-        uint id;
+        uint id;         
         uint cur_order;
         uint last_order;
     }
-    
+    //This is the struct of the seller which contains seller details.
     struct Seller {
         uint id;
         uint[] product_list;
     }
-    
+    //This is the struct of the shipment which contains shipment details.
     struct Shipment {
         uint id;
         uint cur_order;
         uint order_count;
     }
-    
-    
-    
+    //This is the mapping customer details.
     mapping(uint => Customer) customer_details;
+    //This is the mapping seller details.
     mapping(uint => Seller) seller_details;
+    //This is the mapping shipment details.
     mapping(uint => Shipment) shipment_details;
+    //This is the mapping order details.
     mapping(uint => Order) order_details;
-    
+
     mapping(address => uint) get_seller_id;
     mapping(address => uint ) get_shipment_id;
     mapping(address => uint) get_customer_id;
@@ -93,8 +95,6 @@ contract DecentralizedShipment {
     }
     
     /* ---------------UTILITY FUNCTIONS------ */
-    
- 
     function product_exists(uint item, uint seller_id) 
     public view returns(bool) {
         uint i;
@@ -108,7 +108,6 @@ contract DecentralizedShipment {
         }
         return false;
     }
-    
     function get_id() public view returns(uint) {
         uint id;
         id = get_customer_id[msg.sender];
@@ -129,7 +128,12 @@ contract DecentralizedShipment {
     
 
 
+
     /* ---------------CUSTOMER--------------- */
+
+    /**
+        * @dev This function is used to register a customer in the system.
+        */
     function register_customer() public returns(bool) {
         
         require(get_customer_id[msg.sender] == 0, "Customer already registered");
@@ -141,30 +145,39 @@ contract DecentralizedShipment {
         get_customer_id[msg.sender] = customer.id;
         return true;
     }
-    
+    /**
+        * @dev This function is used to give an order to a customer.
+        * @param product_id This is the product id of the product that is being ordered.
+        * @param seller_id This is the seller id of the seller who is selling the product.
+    */
     function give_order(uint product_id, uint seller_id) is_customer() public payable returns(bool) {
         require(seller_id <= seller_count, "Seller doesn't exist");
         require(customer_details[get_customer_id[msg.sender]].cur_order == 0, "Already given order");
         require(product_exists(product_id, seller_id) == true, "Item doesn't exist");
-        
 
         order_count++;
-        Order storage o = order_details[order_count];
-        o.id = order_count;
-        o.products = [product_id];
-        o.price = [product_id].length * product_cost;
-        o.status = OrderStatus.ordered;
-        o.seller = seller_id;
-        o.customer = get_customer_id[msg.sender];
-        o.pStatus = ProductStatus.not_damaged;
+        Order storage order = order_details[order_count];
+        order.id = order_count;
+        order.products = [product_id];
+        order.price = [product_id].length * product_cost;
+        order.status = OrderStatus.ordered;
+        order.seller = seller_id;
+        order.customer = get_customer_id[msg.sender];
+        order.pStatus = ProductStatus.not_damaged;
         
-        customer_details[get_customer_id[msg.sender]].cur_order = o.id;
-        emit order_status_update(o.id, o.status);
+        customer_details[get_customer_id[msg.sender]].cur_order = order.id;
+        emit order_status_update(order.id, order.status);
         return true;
     }
+    /**
+        * @dev This function is used to checking the order status.
+        * @param order_id This is the order id of the order that is checking status.
+        * @param seller_id This is the seller id of the seller who is selling the product.
+        * @return This return the order status and product status.
+    */
     function check_order_status_customer(uint order_id, uint seller_id) is_customer()  has_ordered() public view returns(OrderStatus,ProductStatus) {
-        require(seller_id <= seller_count, "Seller doesn't exist");
-        require(order_id <= order_count, "Order doesn't exist");
+        require(seller_id <= seller_count, "Seller doesn't exist");  //Checking if seller exists.
+        require(order_id <= order_count, "Order doesn't exist");     //Checking if order exists.
     
         /*if(order_details[order_id].status == OrderStatus.ordered && order_details[order_id].pStatus == ProductStatus.damaged) {
             return (0,1);
@@ -193,29 +206,42 @@ contract DecentralizedShipment {
         }*/
         return (order_details[order_id].status,order_details[order_id].pStatus);
     }
-    function cancel_order(uint order_id) is_customer() has_ordered() public returns(OrderStatus) {
-        require(order_id <= order_count, "Order doesn't exist");
-        require(order_details[order_id].customer == get_customer_id[msg.sender], "You don't have this order");
-        require(order_details[order_id].status != OrderStatus.received, "Order is already received");
-        require(order_details[order_id].status != OrderStatus.cancelled, "You have already cancel this order!");
-        order_details[order_id].status = OrderStatus.cancelled;
-        order_details[order_id] = order_details[order_count];
-        emit order_status_update(order_id, order_details[order_id].status);
-        return order_details[order_id].status ;
+    /**
+        * @dev Function to cancel an order.
+        * @param order_id The id of the order to be cancelled.
+        * @return True if the order is cancelled, false otherwise.
+        */
+    function cancel_order(uint order_id) is_customer() has_ordered() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");     //Checking if order exists.
+        require(order_details[order_id].customer == get_customer_id[msg.sender], "You don't have this order");      
+        require(order_details[order_id].status != OrderStatus.received, "Order is already received");               
+        require(order_details[order_id].status != OrderStatus.cancelled, "You have already cancel this order!");    
+        order_details[order_id].status = OrderStatus.cancelled;                                                     
+        order_details[order_id] = order_details[order_count];                                                       
+        emit order_status_update(order_id, order_details[order_id].status);                                       
+        return true;                                                                     
     }
-
-    function receive_order(uint order_id) is_customer() has_ordered() public returns(OrderStatus)  {
+    /**
+        * @dev This function is used for the receiving the order.
+        * @param order_id The id of the order to be received.
+        * @return True if the order is received, false otherwise.
+        */
+    function receive_order(uint order_id) is_customer() has_ordered() public returns(bool)  {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.outfordelivery, "Order is not out for delivery");
         require(order_details[order_id].customer == get_customer_id[msg.sender], "You don't have this order");
         order_details[order_id].status = OrderStatus.received;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
-        return order_details[order_id].status;
+        return true;
     }
 
     /* ---------------SELLER--------------- */
 
+    /**
+        * @dev This function is used to add a new seller.
+        * @return True if the seller is added, false otherwise.
+    */
     function register_seller() public returns(bool) {
         require(get_seller_id[msg.sender] == 0, "Seller already registered");
 
@@ -231,6 +257,10 @@ contract DecentralizedShipment {
         get_seller_id[msg.sender] = seller.id;
         return true;
     }
+    /**
+        * @dev This function is used receive the order by the seller.
+        * @param order_id The id of the seller to be preparing.
+        */
     function receive_and_prepare_the_order(uint order_id) is_seller() public returns(bool) {
         uint seller_id = get_seller_id[msg.sender];
         require(order_details[order_id].seller == seller_id, "Not your order");
@@ -239,14 +269,22 @@ contract DecentralizedShipment {
         emit order_status_update(order_id, order_details[order_id].status);
         return true;
     }
-
-    function transfer_order_to_shipment(uint order_id) is_seller() public payable returns(OrderStatus) {
+    /**
+        * @dev This function is used to transfer the order to the delivery person.
+        * @param order_id The id of the order to be delivered.
+        * @return True if the order is delivered, false otherwise.
+    */
+    function transfer_order_to_shipment(uint order_id) is_seller() public payable returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.preparing, "Order is not prepared");
-        order_details[order_id].status = OrderStatus.ontheway;
-        return order_details[order_id].status;
+        order_details[order_id].status = OrderStatus.onthewaytoshipment;
+        return true;
     }
-
+    /**
+        * @dev This function is used to checking the order status.
+        * @param order_id This is the order id of the order that is checking status.
+        * @return The status of the order and status of the product.
+    */
     function check_order_status_seller(uint order_id, uint seller_id) is_seller()  public view returns(OrderStatus, ProductStatus) {
         require(seller_id <= seller_count, "Seller doesn't exist");
         require(order_id <= order_count, "Order doesn't exist");
@@ -282,6 +320,10 @@ contract DecentralizedShipment {
 
     /* ---------------SHIPMENT--------------- */
     
+    /**
+        * @dev This function is used to add a new delivery person.
+        * @return True if the seller is added, false otherwise.
+        */
     function register_shipment() public returns(bool) {
         require(get_shipment_id[msg.sender] == 0, "Shipment already registered");
         shipment_count++;
@@ -291,16 +333,46 @@ contract DecentralizedShipment {
         get_shipment_id[msg.sender] = shipment.id;
         return true;
     }
-     
+    /**
+        * @dev This function is used receive the order from the delivery person.
+        * @param order_id The id of the seller to be preparing.
+    */
     function receive_and_ship_the_order(uint order_id) is_shipment() public returns(bool) {
         uint shipment_id = get_shipment_id[msg.sender];
         require(shipment_details[shipment_id].cur_order == 0, "Already delivering another order");
-        order_details[order_id].status = OrderStatus.ontheway;
+        order_details[order_id].status = OrderStatus.onthewaytoshipment;
         order_details[order_id].shipment = get_shipment_id[msg.sender];
         shipment_details[shipment_id].cur_order = order_id;
         emit order_status_update(order_id, order_details[order_id].status);
         return true;
     }
+
+
+    function update_status_to_otwtc_and_damaged(uint order_id ) is_shipment() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.onthewaytocustomer;
+        order_details[order_id].pStatus = ProductStatus.damaged;
+        order_details[order_id] = order_details[order_count];
+        emit order_status_update(order_id, order_details[order_id].status);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
+        return true;
+    }
+    function update_status_to_otwtc_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.onthewaytocustomer;
+        order_details[order_id].pStatus = ProductStatus.damaged;
+        order_details[order_id] = order_details[order_count];
+        emit order_status_update(order_id, order_details[order_id].status);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
+        return true;
+    }
+
+    /**
+        * @dev This function is used to update the order status to outfordelivery and damaged.
+        * @param order_id The id of the order to be delivered.
+    */
     function update_status_to_ofd_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
@@ -311,15 +383,22 @@ contract DecentralizedShipment {
         emit order_damaged_update(order_id, order_details[order_id].pStatus);
         return true;
     }
+    /**
+        * @dev This function is used to update the order status to outfordelivery and not damaged.
+        * @param order_id The id of the order to be updated.
+    */
     function update_status_to_ofd_and_not_damaged(uint order_id) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
         order_details[order_id].status = OrderStatus.outfordelivery;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
-        
         return true;
     }
+    /**
+        * @dev This function is used to update the order status to received and damaged.
+        * @param order_id The id of the order to be updated.
+    */
     function update_status_to_received_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
@@ -330,6 +409,10 @@ contract DecentralizedShipment {
         emit order_damaged_update(order_id, order_details[order_id].pStatus);
         return true;
     }
+    /**
+        * @dev This function is used to update the order status to received and not damaged.
+        * @param order_id The id of the order to be updated.
+    */
     function update_status_to_received_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.ontheway ||order_details[order_id].status == OrderStatus.outfordelivery , "Order is not on the way or not out for delivery");
@@ -338,6 +421,10 @@ contract DecentralizedShipment {
         emit order_status_update(order_id, order_details[order_id].status);
         return true;
     }
+    /**
+        * @dev This function is used to update the order status to cancelled and damaged.
+        * @param order_id The id of the order to be updated.
+    */
     function update_status_to_cancelled_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status != OrderStatus.received, "Order is already received");
@@ -348,6 +435,10 @@ contract DecentralizedShipment {
         emit order_damaged_update(order_id, order_details[order_id].pStatus);
         return true;
     }
+    /**
+        * @dev This function is used to update the order status to cancelled and not damaged.
+        * @param order_id The id of the order to be updated.
+    */
     function update_status_to_cancelled_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
        require(order_details[order_id].status != OrderStatus.received, "Order is already received");
@@ -356,6 +447,11 @@ contract DecentralizedShipment {
         emit order_status_update(order_id, order_details[order_id].status);
         return true;
     }
+
+    /**
+        * @dev This function is used to checking the order status.
+        * @param order_id This is the order id of the order that is checking status.
+    */
    function check_order_status_shipment(uint order_id, uint seller_id) is_shipment()  public view returns(OrderStatus,ProductStatus) {
         require(seller_id <= seller_count, "Seller doesn't exist");
         require(order_id <= order_count, "Order doesn't exist");
