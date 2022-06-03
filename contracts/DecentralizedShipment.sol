@@ -59,7 +59,7 @@ contract DecentralizedShipment {
     mapping(uint => Shipment) shipment_details;
     //This is the mapping order details.
     mapping(uint => Order) order_details;
-    ,
+
     mapping(address => uint) get_seller_id;
     mapping(address => uint ) get_shipment_id;
     mapping(address => uint) get_customer_id;
@@ -132,7 +132,6 @@ contract DecentralizedShipment {
     /**
         * @dev This function is used to register a customer in the system.
         */
-     */
     function register_customer() public returns(bool) {
         
         require(get_customer_id[msg.sender] == 0, "Customer already registered");
@@ -171,6 +170,8 @@ contract DecentralizedShipment {
     /**
         * @dev This function is used to checking the order status.
         * @param order_id This is the order id of the order that is checking status.
+        * @param seller_id This is the seller id of the seller who is selling the product.
+        * @return This return the order status and product status.
     */
     function check_order_status_customer(uint order_id, uint seller_id) is_customer()  has_ordered() public view returns(OrderStatus,ProductStatus) {
         require(seller_id <= seller_count, "Seller doesn't exist");  //Checking if seller exists.
@@ -206,8 +207,7 @@ contract DecentralizedShipment {
     /**
         * @dev Function to cancel an order.
         * @param order_id The id of the order to be cancelled.
-        * @param seller_id The id of the seller who is cancelling the order.
-        * @returns True if the order is cancelled, false otherwise.
+        * @return True if the order is cancelled, false otherwise.
         */
     function cancel_order(uint order_id) is_customer() has_ordered() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");     //Checking if order exists.
@@ -222,7 +222,7 @@ contract DecentralizedShipment {
     /**
         * @dev This function is used for the receiving the order.
         * @param order_id The id of the order to be received.
-        * @returns True if the order is received, false otherwise.
+        * @return True if the order is received, false otherwise.
         */
     function receive_order(uint order_id) is_customer() has_ordered() public returns(bool)  {
         require(order_id <= order_count, "Order doesn't exist");
@@ -238,7 +238,7 @@ contract DecentralizedShipment {
 
     /**
         * @dev This function is used to add a new seller.
-        * @returns True if the seller is added, false otherwise.
+        * @return True if the seller is added, false otherwise.
     */
     function register_seller() public returns(bool) {
         require(get_seller_id[msg.sender] == 0, "Seller already registered");
@@ -270,17 +270,18 @@ contract DecentralizedShipment {
     /**
         * @dev This function is used to transfer the order to the delivery person.
         * @param order_id The id of the order to be delivered.
-        * @returns True if the order is delivered, false otherwise.
+        * @return True if the order is delivered, false otherwise.
     */
     function transfer_order_to_shipment(uint order_id) is_seller() public payable returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.preparing, "Order is not prepared");
         order_details[order_id].status = OrderStatus.ontheway;
-        return true
+        return true;
     }
     /**
         * @dev This function is used to checking the order status.
         * @param order_id This is the order id of the order that is checking status.
+        * @return The status of the order and status of the product.
     */
     function check_order_status_seller(uint order_id, uint seller_id) is_seller()  public view returns(OrderStatus, ProductStatus) {
         require(seller_id <= seller_count, "Seller doesn't exist");
@@ -319,7 +320,7 @@ contract DecentralizedShipment {
     
     /**
         * @dev This function is used to add a new delivery person.
-        * @returns True if the seller is added, false otherwise.
+        * @return True if the seller is added, false otherwise.
         */
     function register_shipment() public returns(bool) {
         require(get_shipment_id[msg.sender] == 0, "Shipment already registered");
@@ -343,6 +344,29 @@ contract DecentralizedShipment {
         emit order_status_update(order_id, order_details[order_id].status);
         return true;
     }
+
+
+    function update_status_to_otwtc_and_damaged(uint order_id ) is_shipment() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.outfordelivery;
+        order_details[order_id].pStatus = ProductStatus.damaged;
+        order_details[order_id] = order_details[order_count];
+        emit order_status_update(order_id, order_details[order_id].status);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
+        return true;
+    }
+    function update_status_to_otwtc_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
+        require(order_id <= order_count, "Order doesn't exist");
+        require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
+        order_details[order_id].status = OrderStatus.outfordelivery;
+        order_details[order_id].pStatus = ProductStatus.damaged;
+        order_details[order_id] = order_details[order_count];
+        emit order_status_update(order_id, order_details[order_id].status);
+        emit order_damaged_update(order_id, order_details[order_id].pStatus);
+        return true;
+    }
+
     /**
         * @dev This function is used to update the order status to outfordelivery and damaged.
         * @param order_id The id of the order to be delivered.
