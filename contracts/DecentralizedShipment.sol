@@ -11,6 +11,8 @@ contract DecentralizedShipment {
     enum OrderStatus {
         ordered,    // The order has been placed by the customer.
         preparing,  // Order is being prepared.
+        onthewaytoshipment, // Order is on the way to the shipment company.
+        onthewaytocustomer, // Order is on the way to the customer.
         ontheway,   //  Order is on the way.
         outfordelivery, // Order is out for delivery.
         received,   //  Order is received.
@@ -275,7 +277,7 @@ contract DecentralizedShipment {
     function transfer_order_to_shipment(uint order_id) is_seller() public payable returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.preparing, "Order is not prepared");
-        order_details[order_id].status = OrderStatus.ontheway;
+        order_details[order_id].status = OrderStatus.onthewaytoshipment;
         return true;
     }
     /**
@@ -338,7 +340,7 @@ contract DecentralizedShipment {
     function receive_and_ship_the_order(uint order_id) is_shipment() public returns(bool) {
         uint shipment_id = get_shipment_id[msg.sender];
         require(shipment_details[shipment_id].cur_order == 0, "Already delivering another order");
-        order_details[order_id].status = OrderStatus.ontheway;
+        order_details[order_id].status = OrderStatus.onthewaytoshipment;
         order_details[order_id].shipment = get_shipment_id[msg.sender];
         shipment_details[shipment_id].cur_order = order_id;
         emit order_status_update(order_id, order_details[order_id].status);
@@ -349,7 +351,7 @@ contract DecentralizedShipment {
     function update_status_to_otwtc_and_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
-        order_details[order_id].status = OrderStatus.outfordelivery;
+        order_details[order_id].status = OrderStatus.onthewaytocustomer;
         order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
@@ -359,7 +361,7 @@ contract DecentralizedShipment {
     function update_status_to_otwtc_and_not_damaged(uint order_id ) is_shipment() public returns(bool) {
         require(order_id <= order_count, "Order doesn't exist");
         require(order_details[order_id].status == OrderStatus.ontheway, "Order is not on the way or not out for delivery");
-        order_details[order_id].status = OrderStatus.outfordelivery;
+        order_details[order_id].status = OrderStatus.onthewaytocustomer;
         order_details[order_id].pStatus = ProductStatus.damaged;
         order_details[order_id] = order_details[order_count];
         emit order_status_update(order_id, order_details[order_id].status);
